@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lbxChatbox = new System.Windows.Forms.ListBox();
             this.tbxMessage = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // lbxChatbox
@@ -70,6 +72,11 @@
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // ChatRoomForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -93,6 +100,7 @@
         private System.Windows.Forms.TextBox tbxMessage;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

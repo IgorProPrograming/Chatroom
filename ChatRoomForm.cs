@@ -16,6 +16,7 @@ namespace chatroom
 {
     public partial class ChatRoomForm : Form
     {
+
         List<chatList> chatList = new List<chatList>();
 
         private string LoginData = "Server=192.168.156.7;Database=chatroom;User Id=igor;Password=Database123;";
@@ -23,6 +24,10 @@ namespace chatroom
         private string message;
         private string UserName = "Guest";
         private string result;
+
+        public string NewTime;
+        public string PreviousTime;
+
         public ChatRoomForm()
         {
             InitializeComponent();
@@ -61,22 +66,8 @@ namespace chatroom
             {
                 UserName = File.ReadAllText("Username.txt");
             }
-            Query q = new Query(this);
 
-            //get length of table
-            string queryrequest = "SELECT count(id) FROM `chat_data`;";
-            string result;
-            result = q.SendQuery(LoginData, queryrequest);
-            int length = Convert.ToInt32(result); 
-
-            //copy table to chatlist class
-            queryrequest = "SELECT `Username`, `Message`, `DateAndTime` FROM `chat_data`;";
-            q.GetChatHistory(LoginData, queryrequest, length);
-
-            //put messages in listbox
-            foreach(chatList Message in chatList) {
-                lbxChatbox.Items.Add (Message.Username.ToString() + ": " + Message.Message.ToString());
-            }
+            UpdateChat();
         }
 
         public void DataToList(string username, string message, DateTime datetime)
@@ -92,6 +83,43 @@ namespace chatroom
         public void SetUsername(string username)
         {
             UserName = username;
+        }
+
+        public void UpdateChat()
+        {
+            lbxChatbox.Items.Clear();
+
+            Query q = new Query(this);
+
+            //get length of table
+            string queryrequest = "SELECT count(id) FROM `chat_data`;";
+            string result;
+            result = q.SendQuery(LoginData, queryrequest);
+            int length = Convert.ToInt32(result);
+
+            //copy table to chatlist class
+            queryrequest = "SELECT `Username`, `Message`, `DateAndTime` FROM `chat_data`;";
+            q.GetChatHistory(LoginData, queryrequest, length);
+
+            //put messages in listbox
+            foreach (chatList Message in chatList)
+            {
+                lbxChatbox.Items.Insert(0, Message.Username.ToString() + ": " + Message.Message.ToString());
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            string Curry = "SELECT `last_update` FROM `innodb_table_stats` WHERE table_name = \"chat_data\";";
+            Query q = new Query(this);
+            string result = q.SendQuery(LoginData, Curry);
+            NewTime = result;
+
+            if (PreviousTime != null & PreviousTime != NewTime)
+            {
+                UpdateChat();
+                PreviousTime = NewTime;
+            }
         }
     }
 }
