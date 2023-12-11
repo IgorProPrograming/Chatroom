@@ -48,16 +48,19 @@ namespace chatroom
 
         private void SendMessage()
         {
-            Query query = new Query(this);
+            if (tbxMessage.Text != null)
+            {
+                Query query = new Query(this);
 
-            message = tbxMessage.Text;
+                message = tbxMessage.Text;
 
-            string messageQuery = "INSERT INTO `chat_data`(`Username`, `Message`) VALUES ('" + UserName + "','" + message + "')";
-            result = query.InsertData(LoginData, messageQuery);
+                string messageQuery = "INSERT INTO `chat_data`(`Username`, `Message`) VALUES ('" + UserName + "','" + message + "')";
+                result = query.InsertData(LoginData, messageQuery);
 
-            lbxChatbox.Items.Add(UserName + ": " + message);
-            //lbxChatbox.Items.Add(result);
-            tbxMessage.Clear();
+                lbxChatbox.Items.Insert(0, UserName + ": " + message);
+                //lbxChatbox.Items.Add(result);
+                tbxMessage.Clear();
+            }
         }
 
         private void ChatRoomForm_Load(object sender, EventArgs e)
@@ -87,7 +90,7 @@ namespace chatroom
 
         public void UpdateChat()
         {
-            lbxChatbox.Items.Clear();
+           
 
             Query q = new Query(this);
 
@@ -98,9 +101,12 @@ namespace chatroom
             int length = Convert.ToInt32(result);
 
             //copy table to chatlist class
+            chatList.Clear();
             queryrequest = "SELECT `Username`, `Message`, `DateAndTime` FROM `chat_data`;";
             q.GetChatHistory(LoginData, queryrequest, length);
 
+
+            lbxChatbox.Items.Clear();
             //put messages in listbox
             foreach (chatList Message in chatList)
             {
@@ -110,7 +116,8 @@ namespace chatroom
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            string Curry = "SELECT `last_update` FROM `innodb_table_stats` WHERE table_name = \"chat_data\";";
+            UpdateChat();
+           /* string Curry = "SELECT `last_update` FROM `innodb_table_stats` WHERE table_name = \"chat_data\";";
             Query q = new Query(this);
             string result = q.SendQuery(LoginData, Curry);
             NewTime = result;
@@ -119,7 +126,7 @@ namespace chatroom
             {
                 UpdateChat();
                 PreviousTime = NewTime;
-            }
+            }*/
         }
     }
 }
